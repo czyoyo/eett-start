@@ -1,9 +1,10 @@
-package com.example.eztask.repository.freelancer;
+package com.example.eztask.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.eztask.config.QueryDslConfig;
 import com.example.eztask.entity.freelancer.Freelancer;
+import com.example.eztask.repository.freelancer.FreelancerRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
