@@ -1,0 +1,42 @@
+
+spring:
+  jackson:
+    serialization:
+        fail-on-empty-beans: false # 빈 객체를 JSON으로 변환할 때 실패하지 않음
+        write-dates-as-timestamps: false # Date를 timestamp로 변환하지 않음
+
+  application:
+    name: eztask
+
+  sql:
+    init:
+      mode: always # always, never, embedded / (only used during development)
+
+  data:
+    web:
+      pageable:
+        default-page-size: 10 # default page size
+        one-indexed-parameters: true # start index 1
+
+  jpa:
+    hibernate:
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl # camelCase -> snake_case
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+      ddl-auto: create # create, update, validate
+
+    properties:
+      hibernate:
+        show_sql: true # show sql query
+        format_sql: true
+    defer-datasource-initialization: true
+
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3307/ez?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+    username: user
+    password: ez!@3232323
+server:
+  port: 8888
+
