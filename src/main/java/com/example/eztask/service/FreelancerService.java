@@ -3,6 +3,8 @@ package com.example.eztask.service;
 import com.example.eztask.dto.freelancer.FreelancerDto;
 import com.example.eztask.entity.freelancer.Freelancer;
 import com.example.eztask.repository.freelancer.FreelancerRepository;
+import com.example.eztask.util.ViewCountUtil;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FreelancerService {
 
     private final FreelancerRepository freelancerRepository;
+    private final ViewCountUtil viewCountUtil;
 
 
     @Transactional(readOnly = true)
@@ -26,12 +29,29 @@ public class FreelancerService {
         return allFreelancerList.map(FreelancerDto::convertToDto);
     }
 
+    @Transactional
     public FreelancerDto getFreelancerProfile(Long id) {
 
-        // 조회수 업데이트
-        // 프리랜서 프로필 조회
+        Freelancer freelancer = freelancerRepository.findById(id).orElseThrow(() -> new NoSuchElementException("프리랜서 정보가 존재하지 않습니다."));
 
-        return null;
+        // 조회수 증가
+        viewCountUtil.incrementViewCount(id);
+
+        return FreelancerDto.convertToDto(freelancer);
+    }
+
+    // 프리랜서 생성
+    @Transactional
+    public Long createFreelancer() {
+
+        // 랜덤 프리랜서 생성
+        Freelancer freelancer = Freelancer.builder()
+            .name("freelancer_" + (int) (Math.random() * 1000))
+            .detailViewCount(0L)
+            .build();
+
+        return freelancerRepository.save(freelancer).getId();
+
     }
 
 

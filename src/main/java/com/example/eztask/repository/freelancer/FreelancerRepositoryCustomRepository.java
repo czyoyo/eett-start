@@ -9,7 +9,4 @@ public interface FreelancerRepositoryCustomRepository {
     // 프리랜서 목록 조회 (페이징 처리, sort)
     Page<Freelancer> findAllFreelancerList(Pageable pageable);
 
-    // 프리랜서 단일 프로필 조회
-    Freelancer findFreelancerProfile(Long id);
-
 }

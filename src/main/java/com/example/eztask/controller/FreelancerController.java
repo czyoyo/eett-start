@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,6 +43,20 @@ public class FreelancerController {
             .code(ResponseCode.SUCCESS.getCode())
             .message(ResponseCode.SUCCESS.getMessage())
             .data(freelancerProfile)
+            .build();
+    }
+
+    // :TODO 입력 없이 간단하게 랜덤 프리랜서 생성(테스트 용 API)
+    @PostMapping("/create")
+    public CommonResponse<Long> createFreelancer() {
+
+        // 입력 받지 않고 랜덤 프리랜서 생성
+        Long id = freelancerService.createFreelancer();
+
+        return CommonResponse.<Long>builder()
+            .code(ResponseCode.SUCCESS.getCode())
+            .message(ResponseCode.SUCCESS.getMessage())
+            .data(id)
             .build();
     }
 

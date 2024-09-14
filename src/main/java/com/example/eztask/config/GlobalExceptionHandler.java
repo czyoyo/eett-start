@@ -1,6 +1,7 @@
 package com.example.eztask.config;
 
 import com.example.eztask.common.ErrorResponse;
+import java.util.NoSuchElementException;
 import lombok.extern.slf4j.Slf4j;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -21,6 +22,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
         ErrorResponse errorResponse = getErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR  , ex.getMessage()); // 클라이언트에 노출되지 않도록 기본 메시지 사용
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler({
+        NoSuchElementException.class
+    })
+    public ResponseEntity<ErrorResponse> handleNoSuchElementException(NoSuchElementException ex) {
+        ErrorResponse errorResponse = getErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     // 400 에러

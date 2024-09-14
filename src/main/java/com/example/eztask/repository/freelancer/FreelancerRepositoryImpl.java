@@ -33,11 +33,6 @@ public class FreelancerRepositoryImpl implements FreelancerRepositoryCustomRepos
         return PageableExecutionUtils.getPage(freelancerList, pageable, countQuery::fetchOne);
     }
 
-    @Override
-    public Freelancer findFreelancerProfile(Long id) {
-        return null;
-    }
-
     private OrderSpecifier<?>[] getOrderSpecifiers(Pageable pageable) {
         return pageable.getSort().isUnsorted() ? new OrderSpecifier[]{QFreelancer.freelancer.createdAt.desc()} :
             pageable.getSort().stream()
