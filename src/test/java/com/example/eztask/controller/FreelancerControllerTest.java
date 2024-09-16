@@ -31,6 +31,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @ExtendWith(MockitoExtension.class)
 class FreelancerControllerTest {
@@ -45,10 +46,15 @@ class FreelancerControllerTest {
 
     @BeforeEach
     void setUp() {
+
+        LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+        validator.afterPropertiesSet();
+
         mockMvc = MockMvcBuilders.standaloneSetup(freelancerController)
             .setControllerAdvice(new GlobalExceptionHandler()) // 전역 예외 핸들러 추가
-            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver()) // Pageable 처리를 위한 설정
             .setMessageConverters(new MappingJackson2HttpMessageConverter()) // JSON 변환을 위한 메시지 컨버터
+            .setValidator(validator)
             .build();
     }
 

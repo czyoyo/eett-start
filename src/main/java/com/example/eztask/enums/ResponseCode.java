@@ -1,8 +1,9 @@
 package com.example.eztask.enums;
 
 
-import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@Getter
 public enum ResponseCode {
 
     SUCCESS("200", "Success"),
@@ -18,14 +19,6 @@ public enum ResponseCode {
     ResponseCode(String code, String message) {
         this.code = code;
         this.message = message;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public String getMessage() {
-        return message;
     }
 
 }

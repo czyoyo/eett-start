@@ -48,6 +48,9 @@ dependencies {
     // redis
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '3.2.1'
 
+    implementation 'org.hibernate.validator:hibernate-validator:7.0.1.Final'
+
+
 }
 
 tasks.named('test') {

@@ -10,7 +10,7 @@ spring:
 
   sql:
     init:
-      mode: never # always, never, embedded / (only used during development)
+      mode: always # always, never, embedded / (only used during development)
 
   data:
     redis:
@@ -37,6 +37,9 @@ spring:
         format_sql: true
     defer-datasource-initialization: true
 
+
+
+
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://localhost:3307/ez?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
@@ -45,3 +48,6 @@ spring:
 server:
   port: 8888
 
+payment:
+  toss:
+    secret-key: test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6
