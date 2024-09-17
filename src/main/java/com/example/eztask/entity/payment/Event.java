@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -19,7 +20,9 @@ import org.hibernate.annotations.Comment;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "event")
+@Table(name = "event", indexes = {
+    @Index(name = "idx_event_code", columnList = "event_code")
+})
 public class Event extends BaseEntity { // 이벤트 코드에 따라 포인트 추가적립
 
     @Id
