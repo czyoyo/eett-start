@@ -25,7 +25,7 @@ public class Coupon extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     // 쿠폰 이름
     @Column(name = "name", columnDefinition = "VARCHAR(100)", nullable = false)

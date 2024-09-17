@@ -29,7 +29,7 @@ public class PrePaymentData {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     @Comment("인덱스")
     @Column(name = "id", columnDefinition = "BIGINT UNSIGNED")
-    private Long id;
+    private long id;
 
     @JoinColumn(name = "request_user_id", columnDefinition = "BIGINT UNSIGNED", nullable = false, foreignKey = @jakarta.persistence.ForeignKey(name = "FK_PRE_PAYMENT_DATA_REQUEST_USER_ID"))
     @ManyToOne(fetch = FetchType.LAZY)

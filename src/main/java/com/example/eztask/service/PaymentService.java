@@ -9,7 +9,6 @@ import com.example.eztask.entity.payment.PrePaymentData;
 import com.example.eztask.payment.PaymentProcessor;
 import com.example.eztask.dto.processor.PaymentRequest;
 import com.example.eztask.dto.processor.PaymentResult;
-import com.example.eztask.payment.TossPaymentProcessor;
 import com.example.eztask.repository.freelancer.FreelancerRepository;
 import com.example.eztask.repository.payment.CouponRepository;
 import com.example.eztask.repository.payment.PaymentDataRepository;

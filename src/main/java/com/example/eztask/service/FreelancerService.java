@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -19,8 +20,9 @@ public class FreelancerService {
     private final ViewCountUtil viewCountUtil;
 
 
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public Page<FreelancerDto> getFreelancerProfileList(Pageable pageable) {
+
         // pageable 의 size 가 10 초과인 경우 예외처리
         if (pageable.getPageSize() > 10) {
             throw new IllegalArgumentException("페이지 사이즈는 10 이하로 설정해주세요.");
