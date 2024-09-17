@@ -4,6 +4,7 @@ import com.example.eztask.dto.payment.PaymentRequestDto;
 import com.example.eztask.dto.payment.PrePaymentRequestDto;
 import com.example.eztask.entity.freelancer.Freelancer;
 import com.example.eztask.entity.payment.Coupon;
+import com.example.eztask.entity.payment.Event;
 import com.example.eztask.entity.payment.PaymentData;
 import com.example.eztask.entity.payment.PrePaymentData;
 import com.example.eztask.payment.PaymentProcessor;
@@ -11,6 +12,7 @@ import com.example.eztask.dto.processor.PaymentRequest;
 import com.example.eztask.dto.processor.PaymentResult;
 import com.example.eztask.repository.freelancer.FreelancerRepository;
 import com.example.eztask.repository.payment.CouponRepository;
+import com.example.eztask.repository.payment.EventRepository;
 import com.example.eztask.repository.payment.PaymentDataRepository;
 import com.example.eztask.repository.payment.PrePaymentDataRepository;
 import java.math.BigDecimal;
@@ -28,18 +30,22 @@ public class PaymentService {
     private final FreelancerRepository freelancerRepository;
     private final CouponRepository couponRepository;
     private final PaymentProcessor paymentProcessor;
+    private final EventRepository eventRepository;
 
     public PaymentService(
         PrePaymentDataRepository prePaymentDataRepository,
         PaymentDataRepository paymentDataRepository,
         FreelancerRepository freelancerRepository,
         CouponRepository couponRepository,
-        PaymentProcessor paymentProcessor) {
+        PaymentProcessor paymentProcessor,
+        EventRepository eventRepository
+        ) {
         this.prePaymentDataRepository = prePaymentDataRepository;
         this.paymentDataRepository = paymentDataRepository;
         this.freelancerRepository = freelancerRepository;
         this.couponRepository = couponRepository;
         this.paymentProcessor = paymentProcessor;
+        this.eventRepository = eventRepository;
     }
 
     @Transactional
@@ -106,12 +112,44 @@ public class PaymentService {
         // 결제 데이터 저장
         savePaymentData(result, freelancer, originalAmount, discountAmount, paymentRequestDto.getCouponCode());
 
+
         // 성공하면 프리랜서 포인트 업데이트
         if(result.isSuccess()) {
-            updateFreelancerPoint(freelancer, discountAmount);
+            // 이벤트 코드에 따른 추가적립 포인트 계산
+            BigDecimal additionalPoint = addPointByEventCode(paymentRequestDto.getEventCode(), originalAmount);
+
+            // 프리랜서 포인트 업데이트
+            updateFreelancerPoint(freelancer, additionalPoint);
         }
 
     }
+
+    // 이벤트 코드 조회 후 포인트 추가적립
+    private BigDecimal addPointByEventCode(String eventCode, BigDecimal amount) {
+
+        // 이벤트 코드가 없으면 0 리턴
+        if(eventCode == null || eventCode.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+
+        // 이벤트 코드로 이벤트 조회
+        Event event = eventRepository.findByEventCode(eventCode);
+        if(event == null) {
+            log.error("이벤트 정보가 없습니다. eventCode: {}, amount: {}", eventCode, amount);
+            throw new IllegalArgumentException("이벤트 정보가 없습니다.");
+        }
+
+        // 이벤트 기간 확인
+        LocalDateTime now = LocalDateTime.now();
+        if(now.isBefore(event.getStartDate()) || now.isAfter(event.getEndDate())) {
+            log.error("이벤트 기간이 아닙니다. eventCode: {}, amount: {}", eventCode, amount);
+            throw new IllegalArgumentException("이벤트 기간이 아닙니다.");
+        }
+
+        // 이벤트 코드에 따른 추가적립 포인트 계산 후 반환
+        return amount.multiply(BigDecimal.valueOf(event.getPointRate()).divide(BigDecimal.valueOf(100)));
+    }
+
 
     // 프리랜서의 포인트 업데이트
     private void updateFreelancerPoint(Freelancer freelancer, BigDecimal amount) {
@@ -166,6 +204,10 @@ public class PaymentService {
 
     public BigDecimal calculateTotalAmount(BigDecimal originalAmount, String couponCode) {
         return applyCouponDiscount(originalAmount, couponCode);
+    }
+
+    public BigDecimal calculateAdditionalPoint(String eventCode, BigDecimal amount) {
+        return addPointByEventCode(eventCode, amount);
     }
 
 

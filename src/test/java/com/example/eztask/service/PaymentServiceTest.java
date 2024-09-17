@@ -2,6 +2,7 @@ package com.example.eztask.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.example.eztask.dto.payment.PaymentRequestDto;
@@ -10,21 +11,22 @@ import com.example.eztask.dto.processor.PaymentRequest;
 import com.example.eztask.dto.processor.PaymentResult;
 import com.example.eztask.entity.freelancer.Freelancer;
 import com.example.eztask.entity.payment.Coupon;
+import com.example.eztask.entity.payment.Event;
 import com.example.eztask.entity.payment.PrePaymentData;
 import com.example.eztask.payment.PaymentProcessor;
 import com.example.eztask.repository.freelancer.FreelancerRepository;
 import com.example.eztask.repository.payment.CouponRepository;
+import com.example.eztask.repository.payment.EventRepository;
 import com.example.eztask.repository.payment.PaymentDataRepository;
 import com.example.eztask.repository.payment.PrePaymentDataRepository;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
@@ -45,6 +47,9 @@ class PaymentServiceTest {
 
     @Mock
     private PaymentDataRepository paymentDataRepository;
+
+    @Mock
+    private EventRepository eventRepository;
 
     @InjectMocks
     private PaymentService paymentService;
@@ -122,6 +127,7 @@ class PaymentServiceTest {
             .orderId("orderId")
             .originalAmount("10000")
             .couponCode("couponCode")
+            .eventCode("eventCode")
             .build();
 
         Freelancer freelancer = Freelancer.builder()
@@ -141,19 +147,30 @@ class PaymentServiceTest {
             .discountRate(20)
             .build();
 
-        PaymentResult paymentResult = PaymentResult.success("orderId", "toss", "transactionId", "CARD", "8000", "KRW");
+        Event event = Event.builder()
+            .id(1L)
+            .eventCode("eventCode")
+            .pointRate(10)
+            .description("description")
+            .name("name")
+            .startDate(LocalDateTime.now().minusDays(1))
+            .endDate(LocalDateTime.now().plusDays(1))
+            .build();
 
+        PaymentResult paymentResult = PaymentResult.success("orderId", "toss", "transactionId", "CARD", "8000", "KRW");
 
         when(freelancerRepository.findById(1L)).thenReturn(Optional.of(freelancer));
         when(prePaymentDataRepository.findByOrderId("orderId")).thenReturn(prePaymentData);
         when(couponRepository.findByCode("couponCode")).thenReturn(coupon);
         when(paymentProcessor.processPayment(any(PaymentRequest.class))).thenReturn(paymentResult);
+        when(eventRepository.findByEventCode("eventCode")).thenReturn(event);
 
         // 저장부 없어도 성공
         when(paymentDataRepository.save(any())).thenReturn(null);
 
         // When & Then
         assertDoesNotThrow(() -> paymentService.pointPaymentRequest(requestDto));
+
     }
 
     @Test
@@ -220,6 +237,45 @@ class PaymentServiceTest {
     }
 
     @Test
+    @DisplayName("이벤트 코드가 없을때 함수작동 테스트")
+    void applyEventPoint_NoEventCode() {
+        // given
+        BigDecimal originalAmount = new BigDecimal("10000");
+
+        // when
+        BigDecimal bigDecimal = paymentService.calculateAdditionalPoint(null, originalAmount);
+
+        // then 예외 발생 하지 않고 0 리턴
+        assertEquals(BigDecimal.ZERO, bigDecimal);
+    }
+
+    @Test
+    @DisplayName("이벤트 코드가 있을때 함수작동 테스트")
+    void applyEventPoint_EventCode() {
+        // given
+        BigDecimal originalAmount = new BigDecimal("10000");
+        Event event = Event.builder()
+            .id(1L)
+            .eventCode("eventCode")
+            .pointRate(10)
+            .description("description")
+            .name("name")
+            .startDate(LocalDateTime.now().minusDays(1))
+            .endDate(LocalDateTime.now().plusDays(1))
+            .build();
+
+        when(eventRepository.findByEventCode("eventCode")).thenReturn(event);
+
+        // when
+        BigDecimal bigDecimal = paymentService.calculateAdditionalPoint(event.getEventCode(), originalAmount);
+
+        // then 기대값은 1,000원
+        // 1,000 원일경우 compareTo 메서드가 0을 리턴
+        assertEquals(0, new BigDecimal("1000").compareTo(bigDecimal));
+    }
+
+
+    @Test
     @DisplayName("쿠폰 할인율이 100일때 함수작동 테스트")
     void applyCouponDiscount_DiscountRate100() {
         // given
@@ -237,6 +293,7 @@ class PaymentServiceTest {
         // then
         assertEquals(new BigDecimal("8000"), bigDecimal);
     }
+
 
     @Test
     @DisplayName("쿠폰 미입력 했을때 함수작동 테스트")

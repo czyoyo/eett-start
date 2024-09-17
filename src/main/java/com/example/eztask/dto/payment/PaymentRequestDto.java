@@ -20,11 +20,17 @@ public class PaymentRequestDto {
 
     @NotBlank(message = "필수 데이터가 없습니다.")
     private String paymentKey;
+
     @NotBlank(message = "필수 데이터가 없습니다.")
     private String orderId;
+
     @NotBlank(message = "필수 데이터가 없습니다.")
     private String amount;
+
     @NotBlank(message = "필수 데이터가 없습니다.")
     private String originalAmount;
+
     private String couponCode;
+
+    private String eventCode;
 }

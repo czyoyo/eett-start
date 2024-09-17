@@ -11,3 +11,6 @@ INSERT INTO freelancer (id, name, detail_view_count, created_at, point) VALUES (
 
 -- 쿠폰
 INSERT INTO coupon (id, name, code, discount_rate, created_at, updated_at) VALUES (1, '20% 할인 쿠폰', 'dis20', 20, '2024-09-15 13:00:00', '2024-09-15 13:00:00');
+
+-- 10프로 추가 적립 이벤트 코드
+INSERT INTO event (id, name, event_code, point_rate, created_at, updated_at, start_date, end_date) VALUES (1, '10% 추가 적립 이벤트', 'event10', 10, '2024-09-15 13:00:00', '2024-09-15 13:00:00', '2023-09-15 13:00:00', '2026-09-15 13:00:00');

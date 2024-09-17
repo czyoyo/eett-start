@@ -41,7 +41,7 @@ public class Event extends BaseEntity { // 이벤트 코드에 따라 포인트 
     private int pointRate;
 
     // 이벤트 설명
-    @Column(name = "description", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "description", columnDefinition = "TEXT")
     @Comment("이벤트 설명")
     private String description;
 
