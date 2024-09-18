@@ -14,7 +14,7 @@ public class ViewCountScheduler {
     private final ViewCountUtil viewCountUtil;
 
     // 5초마다 로컬 카운터를 Redis 로 flush
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 60000) // 1분
     public void flushLocalCountersToRedis() {
         log.info("flushLocalCountersToRedis start");
         viewCountUtil.flushLocalCountersToRedis();
@@ -22,7 +22,7 @@ public class ViewCountScheduler {
     }
 
     // 5초마다 Redis 에서 조회수를 DB 에 저장
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 300000) // 5분
     public void flushRedisCountersToDB() {
         log.info("flushRedisCountersToDB start");
         viewCountUtil.flushRedisCountersToDB();
