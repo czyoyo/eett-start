@@ -54,10 +54,12 @@ public class Freelancer extends BaseEntity {
 
     @OneToMany(mappedBy = "freelancer")
     @Comment("사전 결제 데이터")
+    @Builder.Default
     private List<PrePaymentData> prePaymentDataList = new ArrayList<>();
 
     @OneToMany(mappedBy = "freelancer")
     @Comment("결제 데이터")
+    @Builder.Default
     private List<PaymentData> paymentList = new ArrayList<>();
 
 
